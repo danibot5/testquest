@@ -1,0 +1,20 @@
+{
+  "missions": [
+    {
+      "id": "basic_quality",
+      "title_bg": "Мисия: Основно качество",
+      "description_bg": "Постигни поне 80% покритие и без провалени тестове.",
+      "min_coverage": 80,
+      "max_failed": 0,
+      "min_passed": 1,
+      "reward_points": 50
+    },
+    {
+      "id": "property_intro",
+      "title_bg": "Мисия: Property тест",
+      "description_bg": "Добави тест, който проверява свойство (напр. комутативност на add).",
+      "requires_property_keyword": "hypothesis",
+      "reward_points": 75
+    }
+  ]
+}
