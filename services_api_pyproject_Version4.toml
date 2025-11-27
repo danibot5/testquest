@@ -1,0 +1,18 @@
+[project]
+name = "taskquest-api"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic",
+  "pytest",
+  "coverage",
+  "hypothesis",
+  "psycopg2-binary",
+  "sqlalchemy",
+  "pytest-json-report"
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
