@@ -29,9 +29,9 @@ TaskQuest Academy is a gamified web platform teaching students (grades 8–10) c
   - Frontend: http://localhost:5173
 
 ## Project Structure
-- web/ — React + TS (Vite) app
-- services/api/ — FastAPI backend
-- docs/ — Architecture, testing plan, security notes
+- web/ - HTML, CSS, JS
+- services/api/ - FastAPI backend
+- docs/ - Architecture, testing plan, security notes
 - .github/workflows/ — CI pipelines
 
 ## License
