@@ -199,10 +199,12 @@ def parse_coverage(report_output: str) -> int:
 @app.post("/run", response_model=TestResult)
 def run_tests(req: RunRequest) -> TestResult:
     """Run tests with coverage and return results."""
+    # Note: Empty string validation is handled by Pydantic's min_length=1
+    # This provides additional protection for whitespace-only inputs
     if not req.code.strip():
-        raise HTTPException(status_code=400, detail="Code cannot be empty")
+        raise HTTPException(status_code=422, detail="Code cannot contain only whitespace")
     if not req.tests.strip():
-        raise HTTPException(status_code=400, detail="Tests cannot be empty")
+        raise HTTPException(status_code=422, detail="Tests cannot contain only whitespace")
     
     temp_dir = tempfile.mkdtemp(prefix="taskquest_")
     logger.info(f"Created temp directory: {temp_dir}")

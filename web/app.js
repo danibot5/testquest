@@ -82,7 +82,10 @@ runBtn.addEventListener('click', async () => {
   clearResults();
 
   try {
-    const resp = await fetch('http://localhost:8000/run', {
+    // Use relative URL with /api prefix when served through nginx,
+    // fallback to direct API URL for development
+    const apiBaseUrl = window.location.port === '3000' ? '/api' : 'http://localhost:8000';
+    const resp = await fetch(`${apiBaseUrl}/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: codeEl.value, tests: testsEl.value })
