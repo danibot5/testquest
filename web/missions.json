@@ -1,0 +1,47 @@
+{
+  "missions": [
+    {
+      "id": "basic_quality",
+      "title": "Basic Quality",
+      "title_bg": "Мисия: Основно качество",
+      "description": "Achieve at least 80% coverage with no failed tests.",
+      "description_bg": "Постигни поне 80% покритие и без провалени тестове. Научи се да пишеш unit тестове!",
+      "min_coverage": 80,
+      "max_failed": 0,
+      "min_passed": 1,
+      "reward_points": 50
+    },
+    {
+      "id": "edge_cases",
+      "title": "Edge Cases",
+      "title_bg": "Мисия: Крайни случаи",
+      "description": "Test edge cases and boundary conditions.",
+      "description_bg": "Тествай крайни случаи и гранични условия. Провери какво става с нула, отрицателни числа и много големи стойности.",
+      "min_coverage": 90,
+      "max_failed": 0,
+      "min_passed": 3,
+      "reward_points": 75
+    },
+    {
+      "id": "property_testing",
+      "title": "Property Testing",
+      "title_bg": "Мисия: Property тестване",
+      "description": "Introduction to property-based testing with Hypothesis.",
+      "description_bg": "Въведение в property-based тестване с Hypothesis. Използвай @given декоратора за автоматично генериране на тестови данни.",
+      "requires_property_keyword": "@given",
+      "min_passed": 1,
+      "reward_points": 100
+    },
+    {
+      "id": "mutation_testing",
+      "title": "Mutation Testing",
+      "title_bg": "Мисия: Мутационно тестване",
+      "description": "Understanding mutation testing concepts.",
+      "description_bg": "Разбери концепциите на мутационното тестване. Напиши тестове, които да убият всички мутанти в кода.",
+      "min_coverage": 95,
+      "max_failed": 0,
+      "min_passed": 5,
+      "reward_points": 150
+    }
+  ]
+}
