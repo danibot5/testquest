@@ -3,15 +3,45 @@ let currentMission = null;
 
 async function loadMissions() {
   try {
-    const resp = await fetch('/missions.json');
+    const resp = await fetch('missions.json');
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status}`);
+    }
     const data = await resp.json();
     missions = data.missions || [];
-    // Избираме първата мисия за MVP
-    currentMission = missions.find(m => m.id === 'basic_quality') || missions[0];
-    renderMission();
+    populateMissionSelector();
+    // Select the first mission by default
+    if (missions.length > 0) {
+      currentMission = missions[0];
+      document.getElementById('missionSelect').value = currentMission.id;
+      renderMission();
+    }
   } catch (e) {
     console.warn('Cannot load missions.json', e);
+    const missionBox = document.getElementById('missionBox');
+    if (missionBox) {
+      missionBox.innerHTML = '<em>Грешка при зареждане на мисии.</em>';
+    }
   }
+}
+
+function populateMissionSelector() {
+  const select = document.getElementById('missionSelect');
+  if (!select) return;
+  
+  select.innerHTML = '';
+  missions.forEach(m => {
+    const option = document.createElement('option');
+    option.value = m.id;
+    option.textContent = m.title_bg;
+    select.appendChild(option);
+  });
+  
+  select.addEventListener('change', (e) => {
+    currentMission = missions.find(m => m.id === e.target.value);
+    renderMission();
+    clearResults();
+  });
 }
 
 function renderMission() {
@@ -24,13 +54,14 @@ function renderMission() {
   missionBox.innerHTML = `
     <h3>${currentMission.title_bg}</h3>
     <p>${currentMission.description_bg}</p>
-    <ul style="margin:4px 0 8px;padding-left:16px;">
+    <ul class="mission-requirements">
       ${currentMission.min_coverage !== undefined ? `<li>Минимум покритие: ${currentMission.min_coverage}%</li>` : ''}
       ${currentMission.max_failed !== undefined ? `<li>Макс. провалени тестове: ${currentMission.max_failed}</li>` : ''}
       ${currentMission.min_passed !== undefined ? `<li>Минимум успешни тестове: ${currentMission.min_passed}</li>` : ''}
-      ${currentMission.reward_points !== undefined ? `<li>Награда точки: ${currentMission.reward_points}</li>` : ''}
+      ${currentMission.requires_property_keyword ? `<li>Изисква ключова дума: <code>${currentMission.requires_property_keyword}</code></li>` : ''}
+      ${currentMission.reward_points !== undefined ? `<li>Награда: ${currentMission.reward_points} точки</li>` : ''}
     </ul>
-    <div id="missionStatus" style="font-weight:bold;"></div>
+    <div id="missionStatus"></div>
   `;
 }
 
@@ -41,12 +72,12 @@ const statusEl = document.getElementById('status');
 const passedEl = document.getElementById('passed');
 const failedEl = document.getElementById('failed');
 const outputEl = document.getElementById('output');
-
-let coverageSpan = document.getElementById('coverage');
-let scoreSpan = document.getElementById('score');
+const coverageSpan = document.getElementById('coverage');
+const scoreSpan = document.getElementById('score');
 
 runBtn.addEventListener('click', async () => {
   statusEl.textContent = 'Running...';
+  statusEl.className = 'status-running';
   runBtn.disabled = true;
   clearResults();
 
@@ -63,8 +94,10 @@ runBtn.addEventListener('click', async () => {
     updateResults(data);
     evaluateMission(data);
     statusEl.textContent = 'Done';
+    statusEl.className = 'status-done';
   } catch (err) {
     statusEl.textContent = 'Error';
+    statusEl.className = 'status-error';
     outputEl.textContent = String(err);
     setMissionStatus('Грешка при изпълнение', false);
   } finally {
@@ -75,8 +108,8 @@ runBtn.addEventListener('click', async () => {
 function clearResults() {
   passedEl.textContent = '0';
   failedEl.textContent = '0';
-  coverageSpan.textContent = '0%';
-  scoreSpan.textContent = '0';
+  if (coverageSpan) coverageSpan.textContent = '0%';
+  if (scoreSpan) scoreSpan.textContent = '0';
   outputEl.textContent = '';
   setMissionStatus('', null);
 }
@@ -84,8 +117,8 @@ function clearResults() {
 function updateResults(data) {
   passedEl.textContent = data.passed;
   failedEl.textContent = data.failed;
-  coverageSpan.textContent = data.coverage_percent + '%';
-  scoreSpan.textContent = data.score;
+  if (coverageSpan) coverageSpan.textContent = data.coverage_percent + '%';
+  if (scoreSpan) scoreSpan.textContent = data.score;
   outputEl.textContent = data.output;
 }
 
@@ -104,14 +137,13 @@ function evaluateMission(runData) {
 
   if (currentMission.requires_property_keyword) {
     const testsText = testsEl.value;
-    
     if (!testsText.includes(currentMission.requires_property_keyword)) {
       ok = false;
     }
   }
 
   if (ok) {
-    setMissionStatus('Мисията изпълнена!', true);
+    setMissionStatus('Мисията изпълнена! 🎉', true);
   } else {
     setMissionStatus('Мисията НЕ е изпълнена.', false);
   }
@@ -121,12 +153,13 @@ function setMissionStatus(text, success) {
   const el = document.getElementById('missionStatus');
   if (!el) return;
   el.textContent = text;
+  el.className = '';
   if (success === null) {
-    el.style.color = '';
+    el.className = '';
   } else if (success) {
-    el.style.color = '#0a832f';
+    el.className = 'mission-success';
   } else {
-    el.style.color = '#c62828';
+    el.className = 'mission-failed';
   }
 }
 
